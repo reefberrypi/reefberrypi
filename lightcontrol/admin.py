@@ -1,3 +1,11 @@
 from django.contrib import admin
+from lightcontrol.models import LightChannel, Schedule
 
-# Register your models here.
+class ScheduleInline(admin.TabularInline):
+    model = Schedule
+    extra = 1
+
+class LightChannelAdmin(admin.ModelAdmin):
+    inlines = [ScheduleInline]
+
+admin.site.register(LightChannel, LightChannelAdmin)
