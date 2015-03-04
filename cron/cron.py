@@ -2,7 +2,7 @@ import sys
 import os
 import django
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../ReefberryPi'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../ReefberryPi/ReefberryPi'))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
 django.setup()
 
