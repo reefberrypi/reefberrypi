@@ -1,11 +1,10 @@
 import sys
 import os
+import django
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
 
-import django
-print("import Django done!")
 django.setup()
 print("django setup done!")
 
@@ -19,9 +18,7 @@ try:
     pwm.setPWMFreq(60)                        # Set frequency to 60 Hz
     # Note if you'd like more debug output you can instead run:
     #pwm = PWM(0x40, debug=True)
-    print("PWM loaded")
 except SyntaxError:
-    print("Syntax Error")
     pass
 
 all_channels = LightChannel.objects.values_list()
