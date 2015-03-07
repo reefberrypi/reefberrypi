@@ -1,10 +1,13 @@
 import sys
 import os
-import django
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../ReefberryPi/ReefberryPi'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
+
+import django
+print("import Django done!")
 django.setup()
+print("django setup done!")
 
 from lightcontrol.ledcontrol import led
 from lightcontrol.models import LightChannel, Schedule
@@ -16,7 +19,9 @@ try:
     pwm.setPWMFreq(60)                        # Set frequency to 60 Hz
     # Note if you'd like more debug output you can instead run:
     #pwm = PWM(0x40, debug=True)
+    print("PWM loaded")
 except SyntaxError:
+    print("Syntax Error")
     pass
 
 all_channels = LightChannel.objects.values_list()
@@ -35,4 +40,3 @@ for channel in all_channels:
         print(led_object.pulse())
     except NameError:
         pass
-
