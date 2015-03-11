@@ -1,14 +1,7 @@
-__author__ = 'outm'
-
 import datetime
 import time
 
 class LedChannel:
-    _label = None
-    _pin = None
-    _max_pulse = None
-    _targets = []
-
     def __init__(self, label, pin, max_pulse, targets):
         self._label = label
         self._pin = pin

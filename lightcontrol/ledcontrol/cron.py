@@ -2,11 +2,10 @@ import sys
 import os
 import django
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
-
-django.setup()
-print("django setup done!")
+if __name__ == '__main__':
+    sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
+    django.setup()
 
 from lightcontrol.ledcontrol import led
 from lightcontrol.models import LightChannel, Schedule

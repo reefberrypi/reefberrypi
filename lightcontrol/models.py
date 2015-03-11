@@ -15,3 +15,5 @@ class Schedule(models.Model):
     active = models.BooleanField(default=True)
     time = models.TimeField()
     target = models.IntegerField()
+    def __str__(self):              # __unicode__ on Python 2
+        return str(self.time)
