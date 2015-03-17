@@ -13,6 +13,8 @@ class Mode(models.Model):
     mode = models.CharField(max_length=4, choices=MODES, unique=True)
     def __str__(self):
         return self.get_mode_display()
+    def modeName(self):
+        return self.get_mode_display()
 
 class LightChannel(models.Model):
     label = models.CharField(max_length=200)

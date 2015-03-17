@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block jumbo_block %}
+{% if all_modes_list %}
+    <ul>
+    {% for mode in all_modes_list %}
+        <li><a href="mode/{{ mode.id }}/">{{ mode }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No mode are setup yet!</p>
+{% endif %}
+    <p><a class="btn btn-primary btn-sm" href="/admin/lightcontrol" role="button">Change settings &raquo;</a></p>
+{% endblock %}
