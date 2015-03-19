@@ -4,16 +4,12 @@ from django.db import models
 
 class Mode(models.Model):
     MODES = (
-        ('NMWE', 'Night Mode Weekend'),
-        ('DMWE', 'Day Mode Weekend'),
-        ('NMWD', 'Night Mode Weekday'),
-        ('DMWD', 'Day Mode Weekday'),
-        ('LIGH', 'Lightning')
+        ('WE', 'Weekend'),
+        ('WD', 'Weekday'),
+        ('LI', 'Lightning')
     )
-    mode = models.CharField(max_length=4, choices=MODES, unique=True)
+    mode = models.CharField(max_length=2, choices=MODES, unique=True)
     def __str__(self):
-        return self.get_mode_display()
-    def modeName(self):
         return self.get_mode_display()
 
 class LightChannel(models.Model):
@@ -21,6 +17,7 @@ class LightChannel(models.Model):
     pin = models.IntegerField()
     max_pulse = models.IntegerField(default=4095)
     max_percentage = models.IntegerField(default = 100)
+    use_in_night_mode = models.BooleanField(default=False)
     mode = models.ForeignKey('Mode')
     def __str__(self):              # __unicode__ on Python 2
         return self.label
@@ -28,9 +25,10 @@ class LightChannel(models.Model):
         unique_together = ('pin', 'mode')
 
 class Schedule(models.Model):
-    active = models.BooleanField(default=True)
     time = models.TimeField()
     target = models.IntegerField()
+    night_schedule = models.BooleanField(default=False)
+    current_percentage = models.IntegerField(editable=False, null=True)
     mode = models.ForeignKey('Mode')
     def __str__(self):              # __unicode__ on Python 2
         return str(self.time)

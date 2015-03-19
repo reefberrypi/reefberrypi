@@ -13,11 +13,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LightChannel',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('label', models.CharField(max_length=200)),
                 ('pin', models.IntegerField()),
                 ('max_pulse', models.IntegerField(default=4095)),
                 ('max_percentage', models.IntegerField(default=100)),
+                ('use_in_night_mode', models.BooleanField(default=False)),
             ],
             options={
             },
@@ -26,8 +27,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Mode',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('mode', models.CharField(choices=[('NMWE', 'Night Mode Weekend'), ('DMWE', 'Day Mode Weekend'), ('NMWD', 'Night Mode Weekday'), ('DMWD', 'Day Mode Weekday'), ('LIGH', 'Lightning')], max_length=4, unique=True)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
+                ('mode', models.CharField(unique=True, max_length=2, choices=[('WE', 'Weekend'), ('WD', 'Weekday'), ('LI', 'Lightning')])),
             ],
             options={
             },
@@ -36,10 +37,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Schedule',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
                 ('active', models.BooleanField(default=True)),
                 ('time', models.TimeField()),
                 ('target', models.IntegerField()),
+                ('night_schedule', models.BooleanField(default=False)),
+                ('current_percentage', models.IntegerField(editable=False)),
                 ('mode', models.ForeignKey(to='lightcontrol.Mode')),
             ],
             options={
