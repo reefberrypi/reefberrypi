@@ -11,24 +11,24 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='LightChannel',
+            name='ColorTemp',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
-                ('label', models.CharField(max_length=200)),
-                ('pin', models.IntegerField()),
-                ('max_pulse', models.IntegerField(default=4095)),
-                ('max_percentage', models.IntegerField(default=100)),
-                ('use_in_night_mode', models.BooleanField(default=False)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('temp', models.CharField(max_length=2, unique=True, choices=[('DL', 'Day Light'), ('ML', 'Moon Light')])),
             ],
             options={
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Mode',
+            name='LightConfig',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
-                ('mode', models.CharField(unique=True, max_length=2, choices=[('WE', 'Weekend'), ('WD', 'Weekday'), ('LI', 'Lightning')])),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('label', models.CharField(max_length=50)),
+                ('pin', models.IntegerField()),
+                ('max_pulse', models.IntegerField(default=4095)),
+                ('max_percentage', models.IntegerField(default=100)),
+                ('color_temp', models.ForeignKey(to='lightcontrol.ColorTemp')),
             ],
             options={
             },
@@ -37,13 +37,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Schedule',
             fields=[
-                ('id', models.AutoField(auto_created=True, verbose_name='ID', primary_key=True, serialize=False)),
-                ('active', models.BooleanField(default=True)),
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('time', models.TimeField()),
                 ('target', models.IntegerField()),
-                ('night_schedule', models.BooleanField(default=False)),
-                ('current_percentage', models.IntegerField(editable=False)),
-                ('mode', models.ForeignKey(to='lightcontrol.Mode')),
+                ('current_percentage', models.IntegerField(null=True, editable=False)),
+                ('day', models.CharField(max_length=2, choices=[('WE', 'Weekend'), ('WD', 'Weekday')])),
+                ('color_temp', models.ForeignKey(to='lightcontrol.LightConfig')),
             ],
             options={
             },
@@ -51,16 +50,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='schedule',
-            unique_together=set([('time', 'mode')]),
-        ),
-        migrations.AddField(
-            model_name='lightchannel',
-            name='mode',
-            field=models.ForeignKey(to='lightcontrol.Mode'),
-            preserve_default=True,
+            unique_together=set([('time', 'day')]),
         ),
         migrations.AlterUniqueTogether(
-            name='lightchannel',
-            unique_together=set([('pin', 'mode')]),
+            name='lightconfig',
+            unique_together=set([('pin', 'color_temp')]),
         ),
     ]

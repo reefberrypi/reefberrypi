@@ -1,15 +1,12 @@
 from django.contrib import admin
-from lightcontrol.models import Mode, LightChannel, Schedule
+from lightcontrol.models import ColorTemp, LightConfig, Schedule
 
-class ScheduleInline(admin.TabularInline):
-    model = Schedule
+class LightConfigInline(admin.TabularInline):
+    model = LightConfig
     extra = 1
 
-class LightChannelInline(admin.TabularInline):
-    model = LightChannel
-    extra = 1
+class ColorTempAdmin(admin.ModelAdmin):
+    inlines = [LightConfigInline]
 
-class ModeAdmin(admin.ModelAdmin):
-    inlines = [ScheduleInline, LightChannelInline]
-
-admin.site.register(Mode, ModeAdmin)
+admin.site.register(ColorTemp, ColorTempAdmin)
+admin.site.register(Schedule)
