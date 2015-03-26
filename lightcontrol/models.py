@@ -2,22 +2,23 @@ from django.db import models
 
 # Create your models here.
 
-class Mode(models.Model):
+class ColorTemp(models.Model):
     MODES = (
         ('DL', 'Day Light'),
         ('ML', 'Moon Light'),
         ('LI', 'Lightning')
     )
     mode = models.CharField(max_length=2, choices=MODES, unique=True)
-    def __str__(self):
+    current_percentage = models.IntegerField(default=0, editable=False)
+    def __str__(self):              # __unicode__ on Python 2
         return self.get_mode_display()
 
-class ColorTemp(models.Model):
-    mode = models.ForeignKey('Mode')
-    max_percentage = models.IntegerField(default = 100)
+class LightConfiguration(models.Model):
+    mode = models.ForeignKey('ColorTemp')
     light_channel = models.ForeignKey('LightChannel')
-    def __str__(self):              # __unicode__ on Python 2
-        return self.label
+    max_percentage = models.IntegerField(default=100)
+    class Meta:
+        unique_together = ('mode', 'light_channel')
 
 class LightChannel(models.Model):
     label = models.CharField(max_length=50)
@@ -26,7 +27,7 @@ class LightChannel(models.Model):
     def __str__(self):              # __unicode__ on Python 2
         return self.label
 
-class Days(models.Model):
+class ScheduleDay(models.Model):
     DAYS = (
         ('WE', 'Weekend'),
         ('WD', 'Weekday')
@@ -36,11 +37,11 @@ class Days(models.Model):
         return self.get_day_display()
 
 class Schedule(models.Model):
+    day = models.ForeignKey('ScheduleDay')
     time = models.TimeField()
     target = models.IntegerField()
-    current_percentage = models.IntegerField(editable=False, null=True)
     color_temp = models.ForeignKey('ColorTemp')
     def __str__(self):              # __unicode__ on Python 2
         return str(self.time)
     class Meta:
-        unique_together = ('time', 'ColorTemp')
+        unique_together = ('day', 'time')

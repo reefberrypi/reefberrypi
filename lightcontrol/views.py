@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from lightcontrol.models import ColorTemp, Schedule, LightConfig
+from lightcontrol.models import ColorTemp
 
 # Create your views here.
 def index(request):
