@@ -44,4 +44,4 @@ class Schedule(models.Model):
     def __str__(self):              # __unicode__ on Python 2
         return str(self.time)
     class Meta:
-        unique_together = ('day', 'time')
+        unique_together = ('color_temp', 'time', 'day')
