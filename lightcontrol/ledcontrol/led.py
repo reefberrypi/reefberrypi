@@ -42,3 +42,14 @@ class LedChannel:
 
     def _make_time(self, time_string):
         return  datetime.datetime.strptime(time_string, "%H:%M")
+
+# class ScheduleCollection:
+#     def __init__(self, previous_time, next_time, previous_target, next_target, color_temp):
+#         self._previous_time = previous_time
+#         self._next_time = next_time
+#         self._previous_target = previous_target
+#         self._next_target = next_target
+#         self._color_temp = color_temp
+#
+#     def update_pwm(self):
+#         pass
