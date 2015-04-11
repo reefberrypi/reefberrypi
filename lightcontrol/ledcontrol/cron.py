@@ -20,71 +20,89 @@ try:
 except SyntaxError:
     pass
 
-def get_schedule_lines():
-    if datetime.datetime.now().isoweekday() > 5:
+def get_db_schedule_lines():
+    if datetime.datetime.now().isoweekday() == 5:
+        schedule_lines = Schedule.objects.filter(day__day='WD').select_related('day', 'color_temp').order_by('time')
+        next_day_lines = Schedule.objects.filter(day__day='WE').select_related('day', 'color_temp').order_by('time')
+    elif datetime.datetime.now().isoweekday() == 6:
         schedule_lines = Schedule.objects.filter(day__day='WE').select_related('day', 'color_temp').order_by('time')
+        next_day_lines = schedule_lines
+    elif datetime.datetime.now().isoweekday() == 7:
+        schedule_lines = Schedule.objects.filter(day__day='WE').select_related('day', 'color_temp').order_by('time')
+        next_day_lines = Schedule.objects.filter(day__day='WD').select_related('day', 'color_temp').order_by('time')
     else:
         schedule_lines = Schedule.objects.filter(day__day='WD').select_related('day', 'color_temp').order_by('time')
-    return schedule_lines
+        next_day_lines = schedule_lines
+    return schedule_lines, next_day_lines
 
-schedule_lines = get_schedule_lines()
+def create_schedule():
+    schedule_lines, next_day_lines = get_db_schedule_lines()
+    for line in next_day_lines:
+        if line.time <= datetime.datetime.now().time():
+            next_day_line = line
+            break
+    for line in schedule_lines:
+        if line.time <= datetime.datetime.now().time():
+            last_line = line
+    next_line = next_day_line
+    for line in reversed(schedule_lines):
+        if line.time >= datetime.datetime.now().time():
+            next_line = line
+    return last_line, next_line
 
-for line in schedule_lines:
-    if line.time <= datetime.datetime.now().time():
-        last_line = line
-    if line.time >= datetime.datetime.now().time():
-        next_line = line
-        break
+# first_line, last_line, next_line = get_schedule_lines()
 
-pin_list = []
-for temp in last_line.color_temp.lightconfiguration_set.all():
-    pin_list.append(temp.light_channel.pin)
-for temp in next_line.color_temp.lightconfiguration_set.all():
-    pin_list.append(temp.light_channel.pin)
-pin_list = sorted(set(pin_list))
+def get_pin_list():
+    pin_list = []
+    for temp in last_line.color_temp.lightconfiguration_set.all():
+        pin_list.append(temp.light_channel.pin)
+    for temp in next_line.color_temp.lightconfiguration_set.all():
+        pin_list.append(temp.light_channel.pin)
+    pin_list = sorted(set(pin_list))
+    return pin_list
 
-schedule_list = []
-for pin in pin_list:
-    schedule_list.append({'pin':pin, 'previous_target': 0, 'next_target': 0
-        , 'previous_time': '', 'next_time': '', 'max_start_percentage': 0
-        , 'max_end_percentage': 0, 'max_pulse': 0})
+last_line, next_line = create_schedule()
+print (last_line)
+print (next_line)
 
-for temp in last_line.color_temp.lightconfiguration_set.all():
-    for item in schedule_list:
-        if item['pin'] == temp.light_channel.pin:
-            item['previous_target'] = last_line.target
-            item['previous_time'] = last_line.time
-            item['previous_target'] = last_line.target
-            item['max_start_percentage'] = temp.max_percentage
-            item['max_pulse'] = temp.light_channel.max_pulse
+def format_schedule_list():
+    schedule_list = []
+    for pin in get_pin_list():
+        schedule_list.append({'pin':pin, 'previous_target': 0, 'next_target': 0
+            , 'previous_time': '', 'next_time': '', 'max_start_percentage': 0
+            , 'max_end_percentage': 0, 'max_pulse': 0})
 
-for temp in next_line.color_temp.lightconfiguration_set.all():
-    for item in schedule_list:
-        if item['pin'] == temp.light_channel.pin:
-            item['next_target'] = next_line.target
-            item['next_time'] = next_line.time
-            item['max_end_percentage'] = temp.max_percentage
+    for temp in last_line.color_temp.lightconfiguration_set.all():
+        for item in schedule_list:
+            if item['pin'] == temp.light_channel.pin:
+                item['previous_target'] = last_line.target
+                item['previous_time'] = last_line.time
+                item['previous_target'] = last_line.target
+                item['max_start_percentage'] = temp.max_percentage
+                item['max_pulse'] = temp.light_channel.max_pulse
 
-print (last_line.time, last_line.target)
-print (next_line.time, next_line.target)
+    for temp in next_line.color_temp.lightconfiguration_set.all():
+        for item in schedule_list:
+            if item['pin'] == temp.light_channel.pin:
+                item['next_target'] = next_line.target
+                item['next_time'] = next_line.time
+                item['max_end_percentage'] = temp.max_percentage
+    return schedule_list
 
-today = datetime.date.today()
-time_resolution = (datetime.datetime.combine(today, next_line.time) -
-                   datetime.datetime.combine(today, last_line.time)).seconds/60
-time_diff = (datetime.datetime.now() - datetime.datetime.combine(today, last_line.time)).seconds/60
+def set_lights():
+    time_resolution = (datetime.datetime.combine(datetime.date.today(), next_line.time) -
+                       datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
+    time_diff = (datetime.datetime.now() - datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
+    for i in format_schedule_list():
+        previous_pulse = i['max_start_percentage']/100 * i['previous_target']/100 * i['max_pulse']
+        next_pulse = i['max_end_percentage']/100 * i['next_target']/100 * i['max_pulse']
+        current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
+        pulse = previous_pulse + current_step
+        pulse = int(pulse)
+        print ('Values: ', i['pin'], 0, pulse)
+        try:
+            pwm.setPWM(i['pin'], 0, pulse)
+        except NameError:
+            pass
 
-
-for i in schedule_list:
-    print(i)
-    previous_pulse = i['max_start_percentage']/100 * i['previous_target']/100 * i['max_pulse']
-    next_pulse = i['max_end_percentage']/100 * i['next_target']/100 * i['max_pulse']
-    current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
-    pulse = previous_pulse + current_step
-    print ('Previous pulse: ', previous_pulse)
-    print ('Next pulse: ', next_pulse)
-    print ('Pulse:', int(pulse))
-    print('Current step: ', current_step)
-    try:
-        pwm.setPWM(i['pin'], 0, pulse)
-    except NameError:
-        pass
+set_lights()
