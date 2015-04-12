@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block jumbo_block %}
-{% if all_modes_list %}
+{% if all_schedules_list %}
     <ul>
-    {% for mode in all_modes_list %}
-        <li><a href="mode/{{ mode.id }}/">{{ mode }}</a></li>
+    {% for schedule in all_schedules_list %}
+        <li><a href="schedule/{{ schedule.id }}/">{{ schedule }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>No mode are setup yet!</p>
+    <p>No schedules are setup yet!</p>
 {% endif %}
     <p><a class="btn btn-primary btn-sm" href="/admin/lightcontrol" role="button">Change settings &raquo;</a></p>
 {% endblock %}
