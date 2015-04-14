@@ -17,7 +17,11 @@ try:
     pwm.setPWMFreq(60)                        # Set frequency to 60 Hz
     # Note if you'd like more debug output you can instead run:
     #pwm = PWM(0x40, debug=True)
-except SyntaxError:
+except SyntaxError as se:
+    print se
+    pass
+except ImportError as ie:
+    print ie
     pass
 
 def get_db_schedule_lines():
@@ -102,7 +106,8 @@ def set_lights():
         print ('Values: ', i['pin'], 0, pulse)
         try:
             pwm.setPWM(i['pin'], 0, pulse)
-        except NameError:
+        except NameError as ne:
+            print ne
             pass
 
 set_lights()
