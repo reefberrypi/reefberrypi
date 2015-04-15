@@ -98,11 +98,12 @@ def set_lights():
                        datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
     time_diff = (datetime.datetime.now() - datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
     for i in format_schedule_list():
-        previous_pulse = i['max_start_percentage']/100 * i['previous_target']/100 * i['max_pulse']
-        next_pulse = i['max_end_percentage']/100 * i['next_target']/100 * i['max_pulse']
+        previous_pulse = float(i['max_start_percentage'])/100 * float(i['previous_target'])/100 * i['max_pulse']
+        next_pulse = float(i['max_end_percentage'])/100 * float(i['next_target'])/100 * i['max_pulse']
         current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
         pulse = previous_pulse + current_step
         pulse = int(pulse)
+        print "pulse: ", pulse
         print ('Values: ', i['pin'], 0, pulse)
         try:
             pwm.setPWM(i['pin'], 0, pulse)
