@@ -6,7 +6,7 @@ import math
 # ============================================================================
 # Adafruit PCA9685 16-Channel PWM Servo Driver
 # ============================================================================
-from lightcontrol.ledcontrol import Adafruit_I2C
+from lightcontrol.ledcontrol.Adafruit_I2C import Adafruit_I2C
 
 
 class PWM :
