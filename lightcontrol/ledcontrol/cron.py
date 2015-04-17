@@ -66,10 +66,6 @@ def get_pin_list():
     pin_list = sorted(set(pin_list))
     return pin_list
 
-last_line, next_line = create_schedule()
-print (last_line)
-print (next_line)
-
 def format_schedule_list():
     schedule_list = []
     for pin in get_pin_list():
@@ -113,5 +109,9 @@ def set_lights():
             pass
 
 while True:
+    last_line, next_line = create_schedule()
+    print (last_line)
+    print (next_line)
+
     set_lights()
     time.sleep(60)
