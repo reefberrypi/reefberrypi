@@ -2,6 +2,7 @@ import sys
 import os
 import datetime
 import django
+import time
 
 if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
@@ -111,4 +112,6 @@ def set_lights():
             print ne
             pass
 
-set_lights()
+while True:
+    set_lights()
+    time.sleep(60)
