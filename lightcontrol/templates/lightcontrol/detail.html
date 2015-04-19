@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block jumbo_block %}
+<h1>{{ lightchannel.label }}</h1>
+<ul>
+    <li>Label: {{ lightchannel.label }}</li>
+    <li>Pin: {{ lightchannel.pin }}</li>
+    <li>Max pulse: {{ lightchannel.max_pulse }}</li>
+    <li>Current percentage: {{ lightchannel.current_percentage }}</li>
+</ul>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+
+
+{% endblock %}

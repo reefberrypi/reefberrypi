@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block jumbo_block %}
-{% if all_schedules_list %}
-    <ul>
-    {% for schedule in all_schedules_list %}
-        <li><a href="schedule/{{ schedule.id }}/">{{ schedule }}</a></li>
+
+{% if all_lightchannels_list %}
+<table style="width:100%">
+    <tr>
+        <td>Channel</td>
+        <td>Current value</td>
+    </tr>
+    {% for channel in all_lightchannels_list %}
+    <tr>
+        <td><a href="{% url 'detail' channel.id %}">{{ channel }}</a></td>
+        <td>{{ channel.current_percentage }} %</td>
+    </tr>
     {% endfor %}
-    </ul>
+</table>
+
 {% else %}
     <p>No schedules are setup yet!</p>
 {% endif %}

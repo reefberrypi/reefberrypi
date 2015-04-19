@@ -8,7 +8,7 @@ class ColorTemp(models.Model):
         ('LI', 'Lightning')
     )
     mode = models.CharField(max_length=2, choices=MODES, unique=True)
-    current_percentage = models.IntegerField(default=0, editable=False)
+    current_percentage = models.IntegerField(default=0, editable=False)  # TODO Delete in case not used
 
     def __str__(self):              # __unicode__ on Python 2
         return self.get_mode_display()
@@ -27,6 +27,7 @@ class LightChannel(models.Model):
     label = models.CharField(max_length=50)
     pin = models.IntegerField(unique=True)
     max_pulse = models.IntegerField(default=4095)
+    current_percentage = models.IntegerField(default=0, editable=False)
 
     def __str__(self):              # __unicode__ on Python 2
         return self.label

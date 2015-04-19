@@ -1,9 +1,18 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.views import generic
 
-from lightcontrol.models import Schedule
+from .models import LightChannel
 
-# Create your views here.
-def index(request):
-    all_schedules_list = Schedule.objects.all()
-    context = {'all_color_temp_list': all_schedules_list}
-    return render(request, 'lightcontrol/index.html', context)
+
+class IndexView(generic.ListView):
+    template_name = 'lightcontrol/index.html'
+    context_object_name = 'all_lightchannels_list'
+
+    def get_queryset(self):
+        return LightChannel.objects.all()
+
+class DetailView(generic.DetailView):
+    model = LightChannel
+    template_name = 'lightcontrol/detail.html'

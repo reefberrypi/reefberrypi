@@ -9,7 +9,7 @@ if __name__ == '__main__':
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ReefberryPi.settings")
     django.setup()
 
-from lightcontrol.models import Schedule
+from lightcontrol.models import Schedule, LightChannel
 
 try:
     from lightcontrol.ledcontrol.Adafruit_PWM_Servo_Driver import PWM
@@ -99,14 +99,23 @@ def set_lights():
         next_pulse = float(i['max_end_percentage'])/100 * float(i['next_target'])/100 * i['max_pulse']
         current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
         pulse = previous_pulse + current_step
+        current_percentage = pulse/ i['max_pulse'] * 100
         pulse = int(pulse)
         print "pulse: ", pulse
         print ('Values: ', i['pin'], 0, pulse)
+        update_current_percentage(i['pin'], int(current_percentage))
         try:
             pwm.setPWM(i['pin'], 0, pulse)
+            update_current_percentage(i['pin'], current_percentage)
         except NameError as ne:
             print ne
             pass
+
+def update_current_percentage(pin, percentage):
+    lc = LightChannel.objects.get(pin=pin)
+    lc.current_percentage = percentage
+    lc.save()
+    print lc.current_percentage
 
 while True:
     last_line, next_line = create_schedule()
