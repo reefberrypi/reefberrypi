@@ -10,14 +10,14 @@ class ColorTemp(models.Model):
     mode = models.CharField(max_length=2, choices=MODES, unique=True)
     current_percentage = models.IntegerField(default=0, editable=False)  # TODO Delete in case not used
 
-    def __str__(self):              # __unicode__ on Python 2
+    def __str__(self):              # TODO update to unicode for all models because of Python 2
         return self.get_mode_display()
 
 
 class LightConfiguration(models.Model):
     mode = models.ForeignKey('ColorTemp')
     light_channel = models.ForeignKey('LightChannel')
-    max_percentage = models.IntegerField(default=100)
+    max_percentage = models.IntegerField(default=100)  # TODO force 0><100
 
     class Meta:
         unique_together = ('mode', 'light_channel')
@@ -47,7 +47,7 @@ class ScheduleDay(models.Model):
 class Schedule(models.Model):
     day = models.ForeignKey('ScheduleDay')
     time = models.TimeField()
-    target = models.IntegerField()
+    target = models.IntegerField()  # TODO force 0><100
     color_temp = models.ForeignKey('ColorTemp')
 
     def __str__(self):              # __unicode__ on Python 2

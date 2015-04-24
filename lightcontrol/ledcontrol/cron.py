@@ -59,11 +59,13 @@ def create_schedule():
 
 def get_pin_list():
     pin_list = []
-    for temp in last_line.color_temp.lightconfiguration_set.all():
-        pin_list.append(temp.light_channel.pin)
-    for temp in next_line.color_temp.lightconfiguration_set.all():
-        pin_list.append(temp.light_channel.pin)
-    pin_list = sorted(set(pin_list))
+    for channel in LightChannel.objects.all():
+        pin_list.append(channel.pin)
+    # for temp in last_line.color_temp.lightconfiguration_set.all():
+    #     pin_list.append(temp.light_channel.pin)
+    # for temp in next_line.color_temp.lightconfiguration_set.all():
+    #     pin_list.append(temp.light_channel.pin)
+    # pin_list = sorted(set(pin_list))
     return pin_list
 
 def format_schedule_list():
@@ -95,12 +97,16 @@ def set_lights():
                        datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
     time_diff = (datetime.datetime.now() - datetime.datetime.combine(datetime.date.today(), last_line.time)).seconds/60
     for i in format_schedule_list():
-        previous_pulse = float(i['max_start_percentage'])/100 * float(i['previous_target'])/100 * i['max_pulse']
-        next_pulse = float(i['max_end_percentage'])/100 * float(i['next_target'])/100 * i['max_pulse']
-        current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
-        pulse = previous_pulse + current_step
-        current_percentage = pulse/ i['max_pulse'] * 100
-        pulse = int(pulse)
+        try:
+            previous_pulse = float(i['max_start_percentage'])/100 * float(i['previous_target'])/100 * i['max_pulse']
+            next_pulse = float(i['max_end_percentage'])/100 * float(i['next_target'])/100 * i['max_pulse']
+            current_step = ((next_pulse - previous_pulse) / time_resolution) * time_diff
+            pulse = previous_pulse + current_step
+            current_percentage = pulse/ i['max_pulse'] * 100
+            pulse = int(pulse)
+        except ZeroDivisionError:
+            pulse = 0
+            current_percentage = 0
         print "pulse: ", pulse
         print ('Values: ', i['pin'], 0, pulse)
         update_current_percentage(i['pin'], int(current_percentage))
