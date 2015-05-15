@@ -81,12 +81,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-MEDIA_ROOT = '/home/reefberrypi/reefberrypi/media/'
+MEDIA_ROOT = '/home/reefberrypi_user/reefberrypi/media/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = '/home/reefberrypi/reefberrypi/static/'
+STATIC_ROOT = '/home/reefberrypi_user/reefberrypi/static/'
 STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+# )
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "static_source"),
 )
